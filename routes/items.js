@@ -37,7 +37,25 @@ router.get('/:id', async (req, res, next) => {
 // POST /items
 router.post('/', async (req, res, next) => {
   try {
-    const { nama, jenis, status, tanggal_masuk, tanggal_keluar } = req.body;
+    const { id, nama, jenis, status, tanggal_masuk, tanggal_keluar } = req.body;
+
+    // If client provides an id, validate and ensure it doesn't already exist
+    if (id !== undefined && id !== null) {
+      const idInt = parseInt(id, 10);
+      if (Number.isNaN(idInt)) return res.status(400).json({ error: 'Invalid id' });
+
+      // check for existing id
+      const { data: existing, error: selectError } = await supabase.from('items').select('id').eq('id', idInt).maybeSingle();
+      if (selectError) return res.status(500).json({ error: selectError.message });
+      if (existing) return res.status(409).json({ error: 'ID already exists' });
+
+      const payload = { id: idInt, nama, jenis, status, tanggal_masuk, tanggal_keluar };
+      const { data, error } = await supabase.from('items').insert(payload).select();
+      if (error) return res.status(500).json({ error: error.message });
+      return res.status(201).json(data[0]);
+    }
+
+    // Default behavior: no id provided, let DB assign id
     const payload = { nama, jenis, status, tanggal_masuk, tanggal_keluar };
     const { data, error } = await supabase.from('items').insert(payload).select();
     if (error) return res.status(500).json({ error: error.message });
