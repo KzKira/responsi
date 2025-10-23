@@ -113,4 +113,4 @@ Gunakan SQL di `db/migrations/001_create_items_table.sql` untuk membuat tabel `i
 
 Project siap untuk deploy ke Vercel. Tambahkan environment variables `SUPABASE_URL` dan `SUPABASE_KEY` di Vercel dashboard.
 
-Link deploy: (isi setelah deploy)
+Link deploy: (https://responsi-blush.vercel.app/)
